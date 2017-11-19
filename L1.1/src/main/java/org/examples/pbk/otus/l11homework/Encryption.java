@@ -1,7 +1,7 @@
 package org.examples.pbk.otus.l11homework;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,10 +9,10 @@ import java.util.Map;
 public class Encryption {
 
     public static void main(String[] args) {
-        Map<String, String> unencryptedUsernamePasswordPairs = generateUsernamePasswordPairs(10);
-        printUsernamePasswordPairs(unencryptedUsernamePasswordPairs);
-        Map<String, String> encryptedUsernamePasswordPairs = encryptPasswords(unencryptedUsernamePasswordPairs);
-        printUsernamePasswordPairs(encryptedUsernamePasswordPairs);
+        Map<String, String> unhashedUsernamePasswordPairs = generateUsernamePasswordPairs(10);
+        printUsernamePasswordPairs(unhashedUsernamePasswordPairs);
+        Map<String, String> hashedUsernamePasswordPairs = hashPasswords(unhashedUsernamePasswordPairs);
+        printUsernamePasswordPairs(hashedUsernamePasswordPairs);
     }
 
     private static Map<String, String> generateUsernamePasswordPairs(int quantity) {
@@ -25,12 +25,11 @@ public class Encryption {
         return map;
     }
 
-    private static Map<String, String> encryptPasswords(Map<String, String> unencryptedUsernamePasswordPairs) {
-        Map<String, String> map = new HashMap<>(unencryptedUsernamePasswordPairs.size());
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        for (Map.Entry<String, String> entry : unencryptedUsernamePasswordPairs.entrySet()) {
-            String encodedPassword = encoder.encode(entry.getValue());
-            map.put(entry.getKey(), encodedPassword);
+    private static Map<String, String> hashPasswords(Map<String, String> unhashedUsernamePasswordPairs) {
+        Map<String, String> map = new HashMap<>(unhashedUsernamePasswordPairs.size());
+        for (Map.Entry<String, String> entry : unhashedUsernamePasswordPairs.entrySet()) {
+            String hashedPassword = BCrypt.hashpw(entry.getValue(), BCrypt.gensalt());
+            map.put(entry.getKey(), hashedPassword);
         }
         return map;
     }

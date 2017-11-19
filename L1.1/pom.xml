@@ -22,8 +22,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <org.apache.commons.lang.version>3.7</org.apache.commons.lang.version>
-        <commons.logging.version>1.2</commons.logging.version>
-        <org.springframework.security.version>4.2.3.RELEASE</org.springframework.security.version>
+        <org.mindrot.jbcrypt.version>0.4</org.mindrot.jbcrypt.version>
     </properties>
 
     <dependencies>
@@ -33,14 +32,9 @@
             <version>${org.apache.commons.lang.version}</version>
         </dependency>
         <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <version>${commons.logging.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-core</artifactId>
-            <version>${org.springframework.security.version}</version>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>${org.mindrot.jbcrypt.version}</version>
         </dependency>
     </dependencies>
 
