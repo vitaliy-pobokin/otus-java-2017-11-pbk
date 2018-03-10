@@ -1,0 +1,32 @@
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="accountDao" class="org.examples.pbk.otus.l131homework.dao.AccountDataSetHibernateDao">
+    </bean>
+
+    <bean id="accountCacheEngine" class="org.examples.pbk.otus.l131homework.cache.CacheEngineImpl">
+        <qualifier value="run"/>
+        <constructor-arg name="lifeTime" value="0"/>
+        <constructor-arg name="idleTime" value="0"/>
+    </bean>
+
+    <bean id="accountDbService" class="org.examples.pbk.otus.l131homework.dbservice.AccountCachedHibernateDbService">
+        <constructor-arg ref="accountDao"/>
+        <constructor-arg ref="accountCacheEngine"/>
+    </bean>
+
+    <bean id="testCacheEngine" class="org.examples.pbk.otus.l131homework.cache.CacheEngineImpl">
+        <qualifier value="test"/>
+        <constructor-arg name="lifeTime" value="20000"/>
+        <constructor-arg name="idleTime" value="10000"/>
+    </bean>
+
+    <bean id="randomDbTask" class="org.examples.pbk.otus.l131homework.RandomDbTask" destroy-method="stop">
+        <constructor-arg ref="testCacheEngine"/>
+    </bean>
+
+    <bean id="persistenceManager" class="org.examples.pbk.otus.l131homework.PersistenceManager" destroy-method="close"/>
+
+</beans>

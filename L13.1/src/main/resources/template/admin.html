@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <link href="css/styles.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <script>
+        function refresh() {
+            location.reload();
+        }
+    </script>
+    <meta charset="UTF-8">
+    <title>Admin Page</title>
+</head>
+<body onload="setInterval('window.location.reload()', ${refreshPeriod?c} );">
+<div style="width: 1170px; display:flex; flex-wrap: wrap; margin-left: auto; margin-right: auto;">
+    <div style="width: 70%; max-width: 70%; margin-left: auto; margin-right: auto;" >
+        <div class="frame" style="padding: 20px">
+            <div>
+                <h3>Admin Page</h3>
+                <table class="table">
+                    <tr>
+                        <td>Cache size</td>
+                        <td>${size}</td>
+                    </tr>
+                    <tr>
+                        <td>Hits</td>
+                        <td>${hits}</td>
+                    </tr>
+                    <tr>
+                        <td>Misses</td>
+                        <td>${misses}</td>
+                    </tr>
+                    <tr>
+                        <td>Life Time</td>
+                        <td>${lifetime}</td>
+                    </tr>
+                    <tr>
+                        <td>Idle Time</td>
+                        <td>${idletime}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
