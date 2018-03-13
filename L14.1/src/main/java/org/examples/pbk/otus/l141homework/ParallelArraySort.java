@@ -12,20 +12,25 @@ public class ParallelArraySort {
         sort(array, processors);
     }
 
-    public static void sort(int[] array, int threads) {
-        if (array.length < THRESHOLD) {
-            new SortAction(array, 0, array.length).compute();
+    public static void sort(int[] array, int numTasks) {
+        final int nElements = array.length;
+        if (nElements < THRESHOLD) {
+            new SortAction(array, 0, nElements).compute();
         } else {
-            RecursiveAction[] tasks = new RecursiveAction[threads];
-            for (int i = 1; i < threads; i++) {
-                tasks[i] = new SortAction(array, i * array.length / threads, array.length / threads);
+            SortAction[] tasks = new SortAction[numTasks];
+            for (int i = 0; i < tasks.length; i++) {
+                int startIndex = getChunkStartInclusive(i, nElements, numTasks);
+                int endIndex = getChunkEndExclusive(i, nElements, numTasks);
+                tasks[i] = new SortAction(array, startIndex, endIndex);
+            }
+            for (int i = 1; i < numTasks; i++) {
                 tasks[i].fork();
             }
-            new SortAction(array, 0, array.length / threads).compute();
-            for (int i = 1; i < threads; i++) {
+            tasks[0].compute();
+            for (int i = 1; i < numTasks; i++) {
                 tasks[i].join();
             }
-            merge(array, threads);
+            merge(array, numTasks);
         }
     }
 
@@ -70,19 +75,19 @@ public class ParallelArraySort {
 }
 
 class SortAction extends RecursiveAction {
-    private int[] source;
+    private int[] input;
     private int start;
-    private int length;
+    private int end;
 
-    public SortAction(int[] source, int start, int length) {
-        this.source = source;
+    public SortAction(int[] input, int start, int end) {
+        this.input = input;
         this.start = start;
-        this.length = length;
+        this.end = end;
     }
 
     @Override
     protected void compute() {
-        Arrays.sort(source, start, start + length);
+        Arrays.sort(input, start, end);
     }
 }
 
