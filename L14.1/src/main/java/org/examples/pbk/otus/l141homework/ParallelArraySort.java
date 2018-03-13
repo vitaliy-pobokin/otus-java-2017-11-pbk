@@ -1,6 +1,8 @@
 package org.examples.pbk.otus.l141homework;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.RecursiveAction;
 
 public class ParallelArraySort {
@@ -34,25 +36,27 @@ public class ParallelArraySort {
         }
     }
 
-    private static void merge(int[] array, int chunks) {
-        for (int mergeCycle = 1, k = 1; mergeCycle < chunks; mergeCycle *= 2, k++) {
-            RecursiveAction tasks[] = new RecursiveAction[chunks / (1 << k)];
-            for (int i = 1; i < tasks.length; i++) {
-                int leftStart = i * array.length / tasks.length;
-                int leftSize = array.length / tasks.length / 2;
-                int rightStart = leftStart + leftSize;
-                int rightSize = leftSize;
-                tasks[i] = new MergeAction(array, leftStart, rightStart, leftSize, rightSize);
-                tasks[i].fork();
+    private static void merge(int[] array, int nChunks) {
+        final int nElements = array.length;
+        int chunkSize = getChunkSize(nElements, nChunks);
+        for (int i = nChunks; i > 0; i = i >> 1) {
+            List<MergeAction> tasks = new ArrayList<>();
+            for (int k = 0; k < nChunks; k = k + 2) {
+                int leftStartInclusive = k * chunkSize;
+                int leftSize = chunkSize;
+                int rightStartInclusive = (k + 1) * chunkSize;
+                int rightSize = (rightStartInclusive + chunkSize) > nElements ? nElements - rightStartInclusive : chunkSize;
+                tasks.add(new MergeAction(array, leftStartInclusive, rightStartInclusive, leftSize, rightSize));
             }
-            int leftStart = 0;
-            int leftSize = array.length / tasks.length / 2;
-            int rightStart = leftStart + leftSize;
-            int rightSize = leftSize;
-            new MergeAction(array, leftStart, rightStart, leftSize, rightSize).compute();
-            for (int i = 1; i < tasks.length; i++) {
-                tasks[i].join();
+            for (int k = 1; k < tasks.size(); k++) {
+                tasks.get(k).fork();
             }
+            tasks.get(0).compute();
+            for (int k = 1; k < tasks.size(); k++) {
+                tasks.get(k).join();
+            }
+            chunkSize *= 2;
+            nChunks = (nChunks + 1) / 2;
         }
     }
 
@@ -75,19 +79,19 @@ public class ParallelArraySort {
 }
 
 class SortAction extends RecursiveAction {
-    private int[] input;
+    private int[] array;
     private int start;
     private int end;
 
-    public SortAction(int[] input, int start, int end) {
-        this.input = input;
+    public SortAction(int[] array, int start, int end) {
+        this.array = array;
         this.start = start;
         this.end = end;
     }
 
     @Override
     protected void compute() {
-        Arrays.sort(input, start, end);
+        Arrays.sort(array, start, end);
     }
 }
 
@@ -115,21 +119,21 @@ class MergeAction extends RecursiveAction {
         int mergedElemIndex = leftStart;
         while (tempLeftIndex < leftSize && tempRightIndex < temp.length) {
             if (temp[tempLeftIndex] < temp[tempRightIndex]) {
-                source[mergedElemIndex] = temp[tempLeftIndex];
-                tempLeftIndex++;
+                source[mergedElemIndex] = temp[tempLeftIndex++];
             } else {
-                source[mergedElemIndex] = temp[tempRightIndex];
-                tempRightIndex++;
+                source[mergedElemIndex] = temp[tempRightIndex++];
             }
             mergedElemIndex++;
         }
         while (tempLeftIndex < leftSize) {
             source[mergedElemIndex] = temp[tempLeftIndex];
+            if (tempLeftIndex == leftSize - 1 || mergedElemIndex == source.length - 1) break;
             tempLeftIndex++;
             mergedElemIndex++;
         }
         while (tempRightIndex < temp.length) {
             source[mergedElemIndex] = temp[tempRightIndex];
+            if (tempRightIndex == temp.length - 1 || mergedElemIndex == source.length - 1) break;
             tempRightIndex++;
             mergedElemIndex++;
         }
