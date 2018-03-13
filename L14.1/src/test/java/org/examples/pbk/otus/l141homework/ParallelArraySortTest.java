@@ -10,7 +10,25 @@ public class ParallelArraySortTest {
 
     @Test
     public void testSort() {
-        int size = 10_000_000;
+        int size = 1_000_000;
+        int[] array = getUnsortedArray(size);
+        int parallelThreads = 4;
+        ParallelArraySort.sort(array, parallelThreads);
+        Assert.assertTrue(isSortedArray(array));
+    }
+
+    @Test
+    public void testSortOddThreadsNumber() {
+        int size = 1_000_000;
+        int[] array = getUnsortedArray(size);
+        int parallelThreads = 5;
+        ParallelArraySort.sort(array, parallelThreads);
+        Assert.assertTrue(isSortedArray(array));
+    }
+
+    @Test
+    public void testSortArrayCannotDivideOnEqualsParts() {
+        int size = 1_000_001;
         int[] array = getUnsortedArray(size);
         int parallelThreads = 4;
         ParallelArraySort.sort(array, parallelThreads);
