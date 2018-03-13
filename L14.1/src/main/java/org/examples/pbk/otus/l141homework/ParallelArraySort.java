@@ -50,6 +50,23 @@ public class ParallelArraySort {
             }
         }
     }
+
+    private static int getChunkSize(int nElements, int nChunks) {
+        return (nElements + nChunks - 1) / nChunks;
+    }
+
+    private static int getChunkStartInclusive(int chunk, int nElements, int nChunks) {
+        int chunkSize = getChunkSize(nElements, nChunks);
+        return chunk * chunkSize;
+    }
+
+    private static int getChunkEndExclusive(int chunk, int nElements, int nChunks) {
+        int chunkSize = getChunkSize(nElements, nChunks);
+        int end = (chunk + 1) * chunkSize;
+        if (end > nElements)
+            return nElements;
+        return end;
+    }
 }
 
 class SortAction extends RecursiveAction {
