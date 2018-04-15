@@ -1,5 +1,7 @@
 package org.examples.pbk.otus.l151homework.messageSystem;
 
+import org.examples.pbk.otus.l151homework.messageSystem.exceptions.MessageSystemException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

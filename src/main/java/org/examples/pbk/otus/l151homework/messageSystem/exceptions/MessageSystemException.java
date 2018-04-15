@@ -1,4 +1,4 @@
-package org.examples.pbk.otus.l151homework.messageSystem;
+package org.examples.pbk.otus.l151homework.messageSystem.exceptions;
 
 public class MessageSystemException extends Exception {
     public MessageSystemException() {
