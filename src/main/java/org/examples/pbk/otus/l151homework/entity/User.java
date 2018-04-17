@@ -7,8 +7,11 @@ import javax.persistence.*;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
+    @Column(name = "CHAT_USER_ID")
     private long id;
+    @Column(name = "CHAT_USER_USERNAME")
     private String username;
+    @Column(name = "CHAT_USER_PASSWORD")
     private String password;
 
     public User() {

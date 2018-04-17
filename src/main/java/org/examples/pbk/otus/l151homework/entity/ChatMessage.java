@@ -7,8 +7,11 @@ import javax.persistence.*;
 public class ChatMessage {
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
+    @Column(name = "CHAT_MESSAGE_ID")
     private long id;
+    @Column(name = "CHAT_MESSAGE_FROM")
     private String from;
+    @Column(name = "CHAT_MESSAGE_TEXT")
     private String text;
 
     public ChatMessage() {
