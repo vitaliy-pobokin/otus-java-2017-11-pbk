@@ -3,8 +3,9 @@ package org.examples.pbk.otus.l151homework.dbService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.examples.pbk.otus.l151homework.MessageSystemContext;
 import org.examples.pbk.otus.l151homework.entity.ChatMessage;
+import org.examples.pbk.otus.l151homework.entity.User;
 import org.examples.pbk.otus.l151homework.messageSystem.Address;
-import org.examples.pbk.otus.l151homework.messageSystem.Message;
+import org.examples.pbk.otus.l151homework.messageSystem.MsMessage;
 import org.examples.pbk.otus.l151homework.messageSystem.MessageEndpoint;
 import org.examples.pbk.otus.l151homework.messageSystem.exceptions.MessageEndpointException;
 import org.examples.pbk.otus.l151homework.messageSystem.exceptions.MessageSystemException;
@@ -23,11 +24,14 @@ public class DbServiceEndpoint implements MessageEndpoint {
     private final MessageSystemContext context;
     private final Address address;
     private ChatMessageService chatMessageService;
+    private UserService userService;
 
-    public DbServiceEndpoint(MessageSystemContext context, Address address) {
+    public DbServiceEndpoint(MessageSystemContext context) {
         this.context = context;
-        this.address = address;
+        this.address = context.getDbAddress();
         this.chatMessageService = new ChatMessageService();
+        this.userService = new UserService();
+        init();
     }
 
     private void init() {
@@ -44,7 +48,12 @@ public class DbServiceEndpoint implements MessageEndpoint {
     }
 
     @Override
-    public void handle(Message message) {
+    public MessageSystemContext getContext() {
+        return context;
+    }
+
+    @Override
+    public void handle(MsMessage message) {
         MessageBodyDecoder msgBodyDecoder = new MessageBodyDecoder();
         MessageBody msgBody = msgBodyDecoder.decode(message.getBody());
         if (msgBody instanceof MessageToDbBody) {
@@ -71,6 +80,31 @@ public class DbServiceEndpoint implements MessageEndpoint {
 //                        sendMessageToFrontend();
                         break;
                 }
+                break;
+            case "User":
+                switch (msgBody.getMethod()) {
+                    case "create":
+                        User user = null;
+                        try {
+                            user = getObjectFromJsonString(msgBody.getSubject(), User.class);
+                        } catch (IOException e) {
+                            throw new MessageEndpointException("Cannot parse subject:" + msgBody.getSubject());
+                        }
+                        userService.create(user);
+//                        sendMessageToFrontend();
+                        break;
+                    case "findByName":
+                        String username = null;
+                        try {
+                            username = getObjectFromJsonString(msgBody.getSubject(), String.class);
+                        } catch (IOException e) {
+                            throw new MessageEndpointException("Cannot parse subject:" + msgBody.getSubject());
+                        }
+                        userService.findByName(username);
+//                        sendMessageToFrontend();
+                        break;
+                }
+                break;
         }
     }
 
