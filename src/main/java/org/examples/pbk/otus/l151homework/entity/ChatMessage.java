@@ -9,11 +9,14 @@ public class ChatMessage {
     @GeneratedValue(strategy = GenerationType.TABLE)
     private long id;
     private String from;
-    private String body;
+    private String text;
 
-    public ChatMessage(String from, String body) {
+    public ChatMessage() {
+    }
+
+    public ChatMessage(String from, String text) {
         this.from = from;
-        this.body = body;
+        this.text = text;
     }
 
     public long getId() {
@@ -32,20 +35,20 @@ public class ChatMessage {
         this.from = from;
     }
 
-    public String getBody() {
-        return body;
+    public String getText() {
+        return text;
     }
 
-    public void setBody(String body) {
-        this.body = body;
+    public void setText(String body) {
+        this.text = body;
     }
 
     @Override
     public String toString() {
-        return "ChatMessage{" +
+        return "ChatWsMessage{" +
                 "id=" + id +
                 ", from='" + from + '\'' +
-                ", body='" + body + '\'' +
+                ", text='" + text + '\'' +
                 '}';
     }
 }

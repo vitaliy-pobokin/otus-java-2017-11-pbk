@@ -1,25 +1,33 @@
 package org.examples.pbk.otus.l151homework.frontend;
 
-import org.examples.pbk.otus.l151homework.frontend.decoders.MessageDecoder;
-import org.examples.pbk.otus.l151homework.frontend.encoders.ChatMessageEncoder;
-import org.examples.pbk.otus.l151homework.frontend.encoders.InfoMessageEncoder;
-import org.examples.pbk.otus.l151homework.frontend.encoders.JoinMessageEncoder;
-import org.examples.pbk.otus.l151homework.frontend.encoders.UsersMessageEncoder;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.examples.pbk.otus.l151homework.AppContext;
+import org.examples.pbk.otus.l151homework.frontend.decoders.WsMessageDecoder;
+import org.examples.pbk.otus.l151homework.frontend.encoders.*;
 import org.examples.pbk.otus.l151homework.frontend.messages.*;
+import org.examples.pbk.otus.l151homework.messageSystem.Address;
+import org.examples.pbk.otus.l151homework.messageSystem.MsMessage;
+import org.examples.pbk.otus.l151homework.messages.MessageBody;
+import org.examples.pbk.otus.l151homework.messages.MessageToDbBody;
 
+import javax.ejb.EJB;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @ApplicationScoped
 @ServerEndpoint(value = "/messages",
-        encoders = {JoinMessageEncoder.class, InfoMessageEncoder.class, ChatMessageEncoder.class, UsersMessageEncoder.class},
-        decoders = MessageDecoder.class)
+        encoders = {JoinWsMessageEncoder.class, InfoWsMessageEncoder.class, ChatWsMessageEncoder.class, UsersWsMessageEncoder.class, AuthWsMessageEncoder.class},
+        decoders = WsMessageDecoder.class)
 public class MessageWebSocketServer {
 
-    private Logger logger = Logger.getLogger("Message Endpoint");
+    private Logger logger = Logger.getLogger("WsMessage Endpoint");
+
+    @EJB
+    private AppContext appContext;
 
     @Inject
     private WebSocketSessionHandler sessionHandler;
@@ -34,8 +42,8 @@ public class MessageWebSocketServer {
         sessionHandler.removeSession(session);
         String user = (String) session.getUserProperties().get("user");
         if (user != null) {
-            sessionHandler.sendToAllConnectedSessions(new InfoMessage(user + " has left the chat!"));
-            sessionHandler.sendToAllConnectedSessions(new UsersMessage(sessionHandler.getAllConnectedUsers()));
+            sessionHandler.sendToAllConnectedSessions(new InfoWsMessage(user + " has left the chat!"));
+            sessionHandler.sendToAllConnectedSessions(new UsersWsMessage(sessionHandler.getAllConnectedUsers()));
         }
     }
 
@@ -45,22 +53,39 @@ public class MessageWebSocketServer {
     }
 
     @OnMessage
-    public void handleMessage(Message message, Session session) {
-        if (message instanceof JoinMessage) {
-            logger.info("JoinMessage received: " + message);
-            JoinMessage msg = (JoinMessage) message;
+    public void handleMessage(WsMessage message, Session session) {
+        if (message instanceof JoinWsMessage) {
+            logger.info("JoinWsMessage received: " + message);
+            JoinWsMessage msg = (JoinWsMessage) message;
             session.getUserProperties().put("user", msg.getUser());
             sessionHandler.addSession(session);
-            sessionHandler.sendToAllConnectedSessions(new InfoMessage(msg.getUser() + " has joined the chat!"));
-            sessionHandler.sendToAllConnectedSessions(new UsersMessage(sessionHandler.getAllConnectedUsers()));
-        } else if (message instanceof ChatMessage) {
+            sessionHandler.sendToAllConnectedSessions(new InfoWsMessage(msg.getUser() + " has joined the chat!"));
+            sessionHandler.sendToAllConnectedSessions(new UsersWsMessage(sessionHandler.getAllConnectedUsers()));
+        } else if (message instanceof ChatWsMessage) {
             String user = (String) session.getUserProperties().get("user");
-            ChatMessage msg = (ChatMessage) message;
+            ChatWsMessage msg = (ChatWsMessage) message;
             if (user == null || !user.equals(msg.getFrom())) {
                 logger.info("Unknown user: " + user);
             } else {
+                persistMessage(msg);
                 sessionHandler.sendToAllConnectedSessions(msg);
             }
         }
+    }
+
+    private void persistMessage(ChatWsMessage msg) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            String subject = mapper.writeValueAsString(msg);
+            MessageBody msgBody = new MessageToDbBody("ChatWsMessage", "create", subject);
+            Address from = appContext.getMessageSystemContext().getFrontendAddress();
+            Address to = appContext.getMessageSystemContext().getDbAddress();
+            String stringMsgBody = mapper.writeValueAsString(msgBody);
+            MsMessage message = new MsMessage(from, to, stringMsgBody);
+            appContext.getMessageSystem().sendMessage(message);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage());
+        }
+
     }
 }

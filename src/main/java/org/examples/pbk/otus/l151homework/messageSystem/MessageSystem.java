@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class MessageSystem {
     private Map<Address, MessageEndpoint> endpoints;
-    private Map<MessageEndpoint, Queue<Message>> messages;
+    private Map<MessageEndpoint, Queue<MsMessage>> messages;
     private final List<Thread> workers;
 
     public MessageSystem() {
@@ -24,15 +24,15 @@ public class MessageSystem {
         if (this.endpoints.putIfAbsent(endpoint.getAddress(), endpoint) != null) {
             throw new MessageSystemException("Endpoint with address: " + endpoint.getAddress() + " already registered.");
         }
-        Queue<Message> messageQueue = new ConcurrentLinkedQueue<>();
+        Queue<MsMessage> messageQueue = new ConcurrentLinkedQueue<>();
         messages.put(endpoint, messageQueue);
         addWorkerThreadForEndpoint(endpoint);
     }
 
-    public void sendMessage(Message message) throws MessageSystemException {
+    public void sendMessage(MsMessage message) throws MessageSystemException {
         MessageEndpoint destination = endpoints.get(message.getTo());
         if (destination != null) {
-            Queue<Message> messageQueue = messages.get(destination);
+            Queue<MsMessage> messageQueue = messages.get(destination);
             messageQueue.add(message);
         } else {
             throw new MessageSystemException("Endpoint with address: " + destination.getAddress() + " not registered.");
@@ -49,7 +49,7 @@ public class MessageSystem {
         String threadName = "MessageEndpoint[" + endpoint.getAddress() + "] worker thread";
         Thread thread = new Thread(() -> {
             while (true) {
-                Queue<Message> messageQueue = messages.get(endpoint);
+                Queue<MsMessage> messageQueue = messages.get(endpoint);
                 while (!messageQueue.isEmpty()) {
                     endpoint.handle(messageQueue.poll());
                 }

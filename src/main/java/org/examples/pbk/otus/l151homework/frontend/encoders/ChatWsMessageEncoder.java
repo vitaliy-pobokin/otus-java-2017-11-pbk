@@ -1,6 +1,6 @@
 package org.examples.pbk.otus.l151homework.frontend.encoders;
 
-import org.examples.pbk.otus.l151homework.frontend.messages.ChatMessage;
+import org.examples.pbk.otus.l151homework.frontend.messages.ChatWsMessage;
 
 import javax.json.Json;
 import javax.json.stream.JsonGenerator;
@@ -13,7 +13,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Locale;
 
-public class ChatMessageEncoder implements Encoder.Text<ChatMessage> {
+public class ChatWsMessageEncoder implements Encoder.Text<ChatWsMessage> {
 
     private static final DateTimeFormatter FORMATTER =
             DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
@@ -21,7 +21,7 @@ public class ChatMessageEncoder implements Encoder.Text<ChatMessage> {
                     .withZone(ZoneId.systemDefault());
 
     @Override
-    public String encode(ChatMessage chatMessage) throws EncodeException {
+    public String encode(ChatWsMessage chatMessage) throws EncodeException {
         StringWriter stringWriter = new StringWriter();
         try (JsonGenerator jsonGenerator = Json.createGenerator(stringWriter)){
             jsonGenerator.writeStartObject()

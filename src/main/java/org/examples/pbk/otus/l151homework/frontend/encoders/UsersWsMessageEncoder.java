@@ -1,6 +1,6 @@
 package org.examples.pbk.otus.l151homework.frontend.encoders;
 
-import org.examples.pbk.otus.l151homework.frontend.messages.JoinMessage;
+import org.examples.pbk.otus.l151homework.frontend.messages.UsersWsMessage;
 
 import javax.json.Json;
 import javax.json.stream.JsonGenerator;
@@ -9,21 +9,24 @@ import javax.websocket.Encoder;
 import javax.websocket.EndpointConfig;
 import java.io.StringWriter;
 
-public class JoinMessageEncoder implements Encoder.Text<JoinMessage> {
+public class UsersWsMessageEncoder implements Encoder.Text<UsersWsMessage> {
     @Override
-    public String encode(JoinMessage joinMessage) throws EncodeException {
+    public String encode(UsersWsMessage usersMessage) throws EncodeException {
         StringWriter stringWriter = new StringWriter();
         try (JsonGenerator jsonGenerator = Json.createGenerator(stringWriter)) {
             jsonGenerator.writeStartObject()
-                    .write("type", "join")
-                    .write("user", joinMessage.getUser())
-                .writeEnd();
+                    .write("type", "users")
+                    .writeStartArray("users");
+                    for (String user : usersMessage.getUsers()) {
+                        jsonGenerator.write(user);
+                    }
+            jsonGenerator.writeEnd().writeEnd();
         }
         return stringWriter.toString();
     }
 
     @Override
-    public void init(EndpointConfig endpointConfig) {
+    public void init(EndpointConfig config) {
 
     }
 

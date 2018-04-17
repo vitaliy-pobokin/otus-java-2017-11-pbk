@@ -1,9 +1,9 @@
 package org.examples.pbk.otus.l151homework.frontend.messages;
 
-public class JoinMessage extends Message {
+public class JoinWsMessage extends WsMessage {
     private String user;
 
-    public JoinMessage(String user) {
+    public JoinWsMessage(String user) {
         this.user = user;
     }
 
@@ -13,7 +13,7 @@ public class JoinMessage extends Message {
 
     @Override
     public String toString() {
-        return "JoinMessage{" +
+        return "JoinWsMessage{" +
                 "user='" + user + '\'' +
                 '}';
     }

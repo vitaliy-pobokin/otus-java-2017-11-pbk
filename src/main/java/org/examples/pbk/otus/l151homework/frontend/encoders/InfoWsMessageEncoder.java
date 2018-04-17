@@ -1,6 +1,6 @@
 package org.examples.pbk.otus.l151homework.frontend.encoders;
 
-import org.examples.pbk.otus.l151homework.frontend.messages.InfoMessage;
+import org.examples.pbk.otus.l151homework.frontend.messages.InfoWsMessage;
 
 import javax.json.Json;
 import javax.json.stream.JsonGenerator;
@@ -9,9 +9,9 @@ import javax.websocket.Encoder;
 import javax.websocket.EndpointConfig;
 import java.io.StringWriter;
 
-public class InfoMessageEncoder implements Encoder.Text<InfoMessage> {
+public class InfoWsMessageEncoder implements Encoder.Text<InfoWsMessage> {
     @Override
-    public String encode(InfoMessage infoMessage) throws EncodeException {
+    public String encode(InfoWsMessage infoMessage) throws EncodeException {
         StringWriter stringWriter = new StringWriter();
         try (JsonGenerator jsonGenerator = Json.createGenerator(stringWriter)) {
             jsonGenerator.writeStartObject()

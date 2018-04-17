@@ -2,10 +2,10 @@ package org.examples.pbk.otus.l151homework.frontend.messages;
 
 import java.util.List;
 
-public class UsersMessage extends Message {
+public class UsersWsMessage extends WsMessage {
     private List<String> users;
 
-    public UsersMessage(List<String> users) {
+    public UsersWsMessage(List<String> users) {
         this.users = users;
     }
 
@@ -15,7 +15,7 @@ public class UsersMessage extends Message {
 
     @Override
     public String toString() {
-        return "UsersMessage{" +
+        return "UsersWsMessage{" +
                 "users=" + users +
                 '}';
     }

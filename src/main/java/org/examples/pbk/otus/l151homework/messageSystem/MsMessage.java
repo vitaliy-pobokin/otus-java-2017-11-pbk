@@ -1,11 +1,11 @@
 package org.examples.pbk.otus.l151homework.messageSystem;
 
-public class Message {
+public class MsMessage {
     private Address from;
     private Address to;
     private String body;
 
-    public Message(Address from, Address to, String body) {
+    public MsMessage(Address from, Address to, String body) {
         this.from = from;
         this.to = to;
         this.body = body;

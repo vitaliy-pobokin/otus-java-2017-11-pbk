@@ -1,9 +1,9 @@
 package org.examples.pbk.otus.l151homework.frontend.messages;
 
-public class InfoMessage extends Message {
+public class InfoWsMessage extends WsMessage {
     private String text;
 
-    public InfoMessage(String text) {
+    public InfoWsMessage(String text) {
         this.text = text;
     }
 
@@ -13,7 +13,7 @@ public class InfoMessage extends Message {
 
     @Override
     public String toString() {
-        return "InfoMessage{" +
+        return "InfoWsMessage{" +
                 "text='" + text + '\'' +
                 '}';
     }

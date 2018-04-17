@@ -1,6 +1,6 @@
 package org.examples.pbk.otus.l151homework.frontend;
 
-import org.examples.pbk.otus.l151homework.frontend.messages.Message;
+import org.examples.pbk.otus.l151homework.frontend.messages.WsMessage;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.websocket.EncodeException;
@@ -23,7 +23,7 @@ public class WebSocketSessionHandler {
         sessions.remove(session);
     }
 
-    public void sendToSession(Session session, Message message) {
+    public void sendToSession(Session session, WsMessage message) {
         try {
             session.getBasicRemote().sendObject(message);
         } catch (IOException | EncodeException e) {
@@ -31,7 +31,7 @@ public class WebSocketSessionHandler {
         }
     }
 
-    public void sendToAllConnectedSessions(Message message) {
+    public void sendToAllConnectedSessions(WsMessage message) {
         sessions.stream().forEach(session -> {
             try {
                 session.getBasicRemote().sendObject(message);

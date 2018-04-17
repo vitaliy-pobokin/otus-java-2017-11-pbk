@@ -2,13 +2,13 @@ package org.examples.pbk.otus.l151homework.frontend.messages;
 
 import java.time.Instant;
 
-public class ChatMessage extends Message {
+public class ChatWsMessage extends WsMessage {
     private String from;
     private String to;
     private String text;
     private Instant date;
 
-    public ChatMessage(String from, String to, String text) {
+    public ChatWsMessage(String from, String to, String text) {
         this.from = from;
         this.to = to;
         this.text = text;
@@ -33,7 +33,7 @@ public class ChatMessage extends Message {
 
     @Override
     public String toString() {
-        return "ChatMessage{" +
+        return "ChatWsMessage{" +
                 "from='" + from + '\'' +
                 ", to='" + to + '\'' +
                 ", text='" + text + '\'' +
