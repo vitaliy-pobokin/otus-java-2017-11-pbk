@@ -5,11 +5,20 @@ import org.examples.pbk.otus.l151homework.messageSystem.MsMessage;
 
 public class AuthResponseMessage extends MsMessage {
 
+    private String type;
     private String username;
     private boolean success;
 
     public AuthResponseMessage(Address from, Address to) {
         super(from, to);
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getUsername() {
@@ -31,7 +40,8 @@ public class AuthResponseMessage extends MsMessage {
     @Override
     public String toString() {
         return "AuthResponseMessage{" +
-                "username='" + username + '\'' +
+                "type='" + type + '\'' +
+                ", username='" + username + '\'' +
                 ", success=" + success +
                 '}';
     }

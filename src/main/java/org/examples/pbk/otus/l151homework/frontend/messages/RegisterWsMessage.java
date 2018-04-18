@@ -19,7 +19,7 @@ public class RegisterWsMessage extends WsMessage {
 
     @Override
     public String toString() {
-        return "LoginWsMessage{" +
+        return "RegisterWsMessage{" +
                 "username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 '}';

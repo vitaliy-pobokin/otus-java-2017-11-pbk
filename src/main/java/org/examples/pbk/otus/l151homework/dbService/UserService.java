@@ -33,17 +33,17 @@ public class UserService {
         });
     }
 
-    public void create(User chatMessage) {
+    public void create(User user) {
         TransactionUtils.runInTransactionWithoutResult(session -> {
             dao.setSession(session);
-            dao.create(chatMessage);
+            dao.create(user);
         });
     }
 
-    public void update(User chatMessage) {
+    public void update(User user) {
         TransactionUtils.runInTransactionWithoutResult(session -> {
             dao.setSession(session);
-            dao.update(chatMessage);
+            dao.update(user);
         });
     }
 
