@@ -1,4 +1,4 @@
-package org.examples.pbk.otus.l151homework.entity;
+package org.examples.pbk.otus.l151homework.dbService.entity;
 
 import javax.persistence.*;
 

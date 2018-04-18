@@ -36,6 +36,7 @@ public class AppContext {
     @PreDestroy
     public void dispose() {
         SessionFactoryProvider.dispose();
+        messageSystem.dispose();
     }
 
     public MessageSystem getMessageSystem() {

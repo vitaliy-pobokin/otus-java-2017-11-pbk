@@ -1,4 +1,4 @@
-package org.examples.pbk.otus.l151homework.frontend.messages;
+package org.examples.pbk.otus.l151homework.frontend.wsMessages;
 
 public class InfoWsMessage extends WsMessage {
     private String text;

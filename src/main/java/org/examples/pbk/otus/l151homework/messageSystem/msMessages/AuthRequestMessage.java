@@ -1,4 +1,4 @@
-package org.examples.pbk.otus.l151homework.messages;
+package org.examples.pbk.otus.l151homework.messageSystem.msMessages;
 
 import org.examples.pbk.otus.l151homework.messageSystem.Address;
 import org.examples.pbk.otus.l151homework.messageSystem.MsMessage;

@@ -1,10 +1,10 @@
-package org.examples.pbk.otus.l151homework.frontend.messages;
+package org.examples.pbk.otus.l151homework.frontend.wsMessages;
 
-public class RegisterWsMessage extends WsMessage {
+public class LoginWsMessage extends WsMessage {
     private String username;
     private String password;
 
-    public RegisterWsMessage(String username, String password) {
+    public LoginWsMessage(String username, String password) {
         this.username = username;
         this.password = password;
     }
@@ -19,7 +19,7 @@ public class RegisterWsMessage extends WsMessage {
 
     @Override
     public String toString() {
-        return "RegisterWsMessage{" +
+        return "LoginWsMessage{" +
                 "username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 '}';

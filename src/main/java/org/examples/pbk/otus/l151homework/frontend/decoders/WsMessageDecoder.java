@@ -1,6 +1,6 @@
 package org.examples.pbk.otus.l151homework.frontend.decoders;
 
-import org.examples.pbk.otus.l151homework.frontend.messages.*;
+import org.examples.pbk.otus.l151homework.frontend.wsMessages.*;
 
 import javax.json.Json;
 import javax.json.stream.JsonParser;
@@ -25,9 +25,6 @@ public class WsMessageDecoder implements Decoder.Text<WsMessage> {
         WsMessage message = null;
         if (willDecode(s)) {
             switch (messageMap.get("type")) {
-                case "join":
-                    message = new JoinWsMessage(messageMap.get("user"));
-                    break;
                 case "chat":
                     message = new ChatWsMessage(
                             messageMap.get("from"),
@@ -67,10 +64,6 @@ public class WsMessageDecoder implements Decoder.Text<WsMessage> {
         }
         if (messageMap.containsKey("type")) {
             switch (messageMap.get("type")) {
-                case "join":
-                    if (messageMap.containsKey("user"))
-                        willDecode = true;
-                    break;
                 case "chat":
                     String[] chatMsgKeys = {"from", "to", "text"};
                     if (messageMap.keySet().containsAll(Arrays.asList(chatMsgKeys)))

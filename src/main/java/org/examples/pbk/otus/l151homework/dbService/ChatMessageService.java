@@ -1,6 +1,6 @@
 package org.examples.pbk.otus.l151homework.dbService;
 
-import org.examples.pbk.otus.l151homework.entity.ChatMessage;
+import org.examples.pbk.otus.l151homework.dbService.entity.ChatMessage;
 
 import java.util.List;
 

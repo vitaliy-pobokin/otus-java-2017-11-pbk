@@ -1,6 +1,6 @@
 package org.examples.pbk.otus.l151homework.frontend.encoders;
 
-import org.examples.pbk.otus.l151homework.frontend.messages.ChatWsMessage;
+import org.examples.pbk.otus.l151homework.frontend.wsMessages.ChatWsMessage;
 
 import javax.json.Json;
 import javax.json.stream.JsonGenerator;

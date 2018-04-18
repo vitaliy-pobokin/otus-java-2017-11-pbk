@@ -1,6 +1,6 @@
 package org.examples.pbk.otus.l151homework.dbService;
 
-import org.examples.pbk.otus.l151homework.entity.User;
+import org.examples.pbk.otus.l151homework.dbService.entity.User;
 import org.hibernate.Session;
 
 import javax.persistence.TypedQuery;

@@ -1,15 +1,15 @@
-package org.examples.pbk.otus.l151homework.messages;
+package org.examples.pbk.otus.l151homework.messageSystem.msMessages;
 
 import org.examples.pbk.otus.l151homework.messageSystem.Address;
 import org.examples.pbk.otus.l151homework.messageSystem.MsMessage;
 
-public class DbOperationResponseMessage extends MsMessage {
+public class DbOperationRequestMessage extends MsMessage {
 
     private String entityName;
     private String methodName;
-    private String result;
+    private String subject;
 
-    public DbOperationResponseMessage(Address from, Address to) {
+    public DbOperationRequestMessage(Address from, Address to) {
         super(from, to);
     }
 
@@ -29,20 +29,20 @@ public class DbOperationResponseMessage extends MsMessage {
         this.methodName = methodName;
     }
 
-    public String getResult() {
-        return result;
+    public String getSubject() {
+        return subject;
     }
 
-    public void setResult(String result) {
-        this.result = result;
+    public void setSubject(String subject) {
+        this.subject = subject;
     }
 
     @Override
     public String toString() {
-        return "DbOperationResponseMessage{" +
+        return "DbOperationRequestMessage{" +
                 "entityName='" + entityName + '\'' +
                 ", methodName='" + methodName + '\'' +
-                ", result='" + result + '\'' +
+                ", subject='" + subject + '\'' +
                 '}';
     }
 }

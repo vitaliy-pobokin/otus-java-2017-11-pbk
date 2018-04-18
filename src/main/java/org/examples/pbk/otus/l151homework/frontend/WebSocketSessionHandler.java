@@ -1,8 +1,7 @@
 package org.examples.pbk.otus.l151homework.frontend;
 
-import org.examples.pbk.otus.l151homework.frontend.messages.WsMessage;
+import org.examples.pbk.otus.l151homework.frontend.wsMessages.WsMessage;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.websocket.EncodeException;
 import javax.websocket.Session;
 import java.io.IOException;
@@ -11,7 +10,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-@ApplicationScoped
 public class WebSocketSessionHandler {
     private Set<Session> sessions = new CopyOnWriteArraySet<Session>();
 

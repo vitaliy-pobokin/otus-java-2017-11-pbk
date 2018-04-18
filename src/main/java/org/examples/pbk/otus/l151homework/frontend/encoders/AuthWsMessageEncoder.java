@@ -1,6 +1,6 @@
 package org.examples.pbk.otus.l151homework.frontend.encoders;
 
-import org.examples.pbk.otus.l151homework.frontend.messages.AuthWsMessage;
+import org.examples.pbk.otus.l151homework.frontend.wsMessages.AuthWsMessage;
 
 import javax.json.Json;
 import javax.json.stream.JsonGenerator;
@@ -16,7 +16,7 @@ public class AuthWsMessageEncoder implements Encoder.Text<AuthWsMessage> {
         try (JsonGenerator jsonGenerator = Json.createGenerator(stringWriter)){
             jsonGenerator.writeStartObject()
                     .write("type", "auth")
-                    .write("username", authWsMessage.getUsername())
+                    .write("user", authWsMessage.getUser())
                     .write("success", authWsMessage.isSuccess())
                     .writeEnd();
         }
