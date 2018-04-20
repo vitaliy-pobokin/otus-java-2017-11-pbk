@@ -1,5 +1,6 @@
 package org.examples.pbk.otus.l151homework.frontend;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.examples.pbk.otus.l151homework.MessageSystemContext;
@@ -8,10 +9,7 @@ import org.examples.pbk.otus.l151homework.messageSystem.Address;
 import org.examples.pbk.otus.l151homework.messageSystem.MsMessage;
 import org.examples.pbk.otus.l151homework.messageSystem.MessageEndpoint;
 import org.examples.pbk.otus.l151homework.messageSystem.exceptions.MessageSystemException;
-import org.examples.pbk.otus.l151homework.messageSystem.msMessages.AuthRequestMessage;
-import org.examples.pbk.otus.l151homework.messageSystem.msMessages.AuthResponseMessage;
-import org.examples.pbk.otus.l151homework.messageSystem.msMessages.DbOperationRequestMessage;
-import org.examples.pbk.otus.l151homework.messageSystem.msMessages.DbOperationResponseMessage;
+import org.examples.pbk.otus.l151homework.messageSystem.msMessages.*;
 
 import javax.websocket.Session;
 import java.util.Map;
@@ -70,7 +68,7 @@ public class FrontendServiceEndpoint implements MessageEndpoint {
     public void handleLoginMessageFromWs(LoginWsMessage message, Session session) {
         waitingForLogin.put(message.getUsername(), session);
         AuthRequestMessage authMsg = new AuthRequestMessage(getAddress(), getContext().getDbAddress());
-        authMsg.setType("login");
+        authMsg.setType(AuthMessageType.LOGIN);
         authMsg.setUsername(message.getUsername());
         authMsg.setPassword(message.getPassword());
         try {
@@ -84,7 +82,7 @@ public class FrontendServiceEndpoint implements MessageEndpoint {
     public void handleRegisterMessageFromWs(RegisterWsMessage message, Session session) {
         waitingForRegistration.put(message.getUsername(), session);
         AuthRequestMessage authMsg = new AuthRequestMessage(getAddress(), getContext().getDbAddress());
-        authMsg.setType("register");
+        authMsg.setType(AuthMessageType.REGISTER);
         authMsg.setUsername(message.getUsername());
         authMsg.setPassword(message.getPassword());
         try {
@@ -116,52 +114,63 @@ public class FrontendServiceEndpoint implements MessageEndpoint {
 
     private void persistChatMessage(ChatWsMessage msg) {
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.registerModule(new JavaTimeModule());
-            String subject = mapper.writeValueAsString(msg);
-            Address from = this.getAddress();
-            Address to = context.getDbAddress();
-            DbOperationRequestMessage message = new DbOperationRequestMessage(from, to);
+            DbOperationRequestMessage message = new DbOperationRequestMessage(this.getAddress(), context.getDbAddress());
             message.setEntityName("ChatMessage");
             message.setMethodName("create");
-            message.setSubject(subject);
+            message.setSubject(serializeToJson(msg));
             context.getMessageSystem().sendMessage(message);
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage());
         }
     }
 
+    private String serializeToJson(Object object) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        return mapper.writeValueAsString(object);
+    }
+
     private void handleAuthResponseMessage(AuthResponseMessage message) {
-        if (message.getType().equals("login")) {
-            Session session = waitingForLogin.get(message.getUsername());
-            if (message.isSuccess()) {
-                session.getUserProperties().put("user", message.getUsername());
-                sessionHandler.addSession(session);
-                sessionHandler.sendToSession(session, new AuthWsMessage(message.getUsername(), true));
-                sessionHandler.sendToAllConnectedSessions(new InfoWsMessage(message.getUsername() + " has joined the chat!"));
-                sessionHandler.sendToAllConnectedSessions(new UsersWsMessage(sessionHandler.getAllConnectedUsers()));
-            } else {
-                sessionHandler.sendToSession(session, new AuthWsMessage(message.getUsername(), false));
-            }
-            waitingForLogin.remove(message.getUsername());
-        } else if (message.getType().equals("register")) {
-            Session session = waitingForRegistration.get(message.getUsername());
-            if (message.isSuccess()) {
-                session.getUserProperties().put("user", message.getUsername());
-                sessionHandler.addSession(session);
-                sessionHandler.sendToSession(session, new AuthWsMessage(message.getUsername(), true));
-                sessionHandler.sendToAllConnectedSessions(new InfoWsMessage(message.getUsername() + " has joined the chat!"));
-                sessionHandler.sendToAllConnectedSessions(new UsersWsMessage(sessionHandler.getAllConnectedUsers()));
-            } else {
-                sessionHandler.sendToSession(session, new AuthWsMessage(message.getUsername(), false));
-            }
-            waitingForRegistration.remove(message.getUsername());
-        } else {
-            logger.log(Level.WARNING, "Not supported message type: " + message.getType());
+        if (message.getType().equals(AuthMessageType.LOGIN)) {
+            handleLoginMessage(message);
+        } else if (message.getType().equals(AuthMessageType.REGISTER)) {
+            handleRegisterMessage(message);
         }
     }
 
     private void handleDbOperationResponseMessage(DbOperationResponseMessage message) {
 
+    }
+
+    private void handleLoginMessage(AuthResponseMessage message) {
+        Session session = waitingForLogin.get(message.getUsername());
+        if (message.isSuccess()) {
+            authorizeUser(session, message.getUsername());
+        } else {
+            sendUnsuccessfulAuthenticationNotification(session, message.getUsername());
+        }
+        waitingForLogin.remove(message.getUsername());
+    }
+
+    private void handleRegisterMessage(AuthResponseMessage message) {
+        Session session = waitingForRegistration.get(message.getUsername());
+        if (message.isSuccess()) {
+            authorizeUser(session, message.getUsername());
+        } else {
+            sendUnsuccessfulAuthenticationNotification(session, message.getUsername());
+        }
+        waitingForRegistration.remove(message.getUsername());
+    }
+
+    private void authorizeUser(Session session, String username) {
+        session.getUserProperties().put("user", username);
+        sessionHandler.addSession(session);
+        sessionHandler.sendToSession(session, new AuthWsMessage(username, true));
+        sessionHandler.sendToAllConnectedSessions(new InfoWsMessage(username + " has joined the chat!"));
+        sessionHandler.sendToAllConnectedSessions(new UsersWsMessage(sessionHandler.getAllConnectedUsers()));
+    }
+
+    private void sendUnsuccessfulAuthenticationNotification(Session session, String username) {
+        sessionHandler.sendToSession(session, new AuthWsMessage(username, false));
     }
 }

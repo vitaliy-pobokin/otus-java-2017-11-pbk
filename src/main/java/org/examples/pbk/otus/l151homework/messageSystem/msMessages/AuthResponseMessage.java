@@ -5,7 +5,7 @@ import org.examples.pbk.otus.l151homework.messageSystem.MsMessage;
 
 public class AuthResponseMessage extends MsMessage {
 
-    private String type;
+    private AuthMessageType type;
     private String username;
     private boolean success;
 
@@ -13,11 +13,11 @@ public class AuthResponseMessage extends MsMessage {
         super(from, to);
     }
 
-    public String getType() {
+    public AuthMessageType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(AuthMessageType type) {
         this.type = type;
     }
 

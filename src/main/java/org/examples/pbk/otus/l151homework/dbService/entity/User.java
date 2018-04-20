@@ -9,9 +9,9 @@ public class User {
     @GeneratedValue(strategy = GenerationType.TABLE)
     @Column(name = "CHAT_USER_ID")
     private long id;
-    @Column(name = "CHAT_USER_USERNAME", unique = true)
+    @Column(name = "CHAT_USER_USERNAME", unique = true, nullable = false)
     private String username;
-    @Column(name = "CHAT_USER_PASSWORD")
+    @Column(name = "CHAT_USER_PASSWORD", nullable = false)
     private String password;
 
     public User() {

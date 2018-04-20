@@ -5,8 +5,8 @@
 
     <persistence-unit name="persistence" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-        <class>org.examples.pbk.otus.l151homework.entity.ChatMessage</class>
-        <class>org.examples.pbk.otus.l151homework.entity.User</class>
+        <class>org.examples.pbk.otus.l151homework.dbService.entity.ChatMessage</class>
+        <class>org.examples.pbk.otus.l151homework.dbService.entity.User</class>
         <properties>
             <property name="javax.persistence.jdbc.url" value="jdbc:oracle:thin:@127.0.0.1:1521:XE" />
             <property name="javax.persistence.jdbc.user" value="SYS AS SYSDBA" />

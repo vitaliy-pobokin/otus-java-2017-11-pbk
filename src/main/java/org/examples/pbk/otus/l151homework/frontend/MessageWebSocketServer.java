@@ -12,12 +12,12 @@ import javax.websocket.server.ServerEndpoint;
 import java.util.logging.Logger;
 
 @ApplicationScoped
-@ServerEndpoint(value = "/wsMessages",
+@ServerEndpoint(value = "/messages",
         encoders = {InfoWsMessageEncoder.class, ChatWsMessageEncoder.class, UsersWsMessageEncoder.class, AuthWsMessageEncoder.class},
         decoders = WsMessageDecoder.class)
 public class MessageWebSocketServer {
 
-    private Logger logger = Logger.getLogger("WsMessage Endpoint");
+    private Logger logger = Logger.getLogger("WsMessageEndpoint");
 
     @EJB
     private AppContext appContext;

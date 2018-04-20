@@ -9,6 +9,7 @@ import org.examples.pbk.otus.l151homework.messageSystem.Address;
 import org.examples.pbk.otus.l151homework.messageSystem.MsMessage;
 import org.examples.pbk.otus.l151homework.messageSystem.MessageEndpoint;
 import org.examples.pbk.otus.l151homework.messageSystem.exceptions.MessageSystemException;
+import org.examples.pbk.otus.l151homework.messageSystem.msMessages.AuthMessageType;
 import org.examples.pbk.otus.l151homework.messageSystem.msMessages.AuthRequestMessage;
 import org.examples.pbk.otus.l151homework.messageSystem.msMessages.AuthResponseMessage;
 import org.examples.pbk.otus.l151homework.messageSystem.msMessages.DbOperationRequestMessage;
@@ -65,7 +66,7 @@ public class DbServiceEndpoint implements MessageEndpoint {
 
     private void handleAuthRequestMessage(AuthRequestMessage message) {
         boolean success = false;
-        if (message.getType().equals("login")) {
+        if (message.getType().equals(AuthMessageType.LOGIN)) {
             User user = null;
             try {
                 user = userService.findByName(message.getUsername());
@@ -74,20 +75,14 @@ public class DbServiceEndpoint implements MessageEndpoint {
             if (user != null && user.getPassword().equals(message.getPassword())) {
                 success = true;
             }
-            sendAuthResponseMessage(message.getFrom(), "login", message.getUsername(), success);
-        } else if (message.getType().equals("register")) {
-            String username = message.getUsername();
-            String password = message.getPassword();
-            if (username != null && password != null) {
-                try {
-                    userService.create(new User(username, password));
-                    success = true;
-                } catch (Exception e) {
-                }
+            sendAuthResponseMessage(message.getFrom(), AuthMessageType.LOGIN, message.getUsername(), success);
+        } else if (message.getType().equals(AuthMessageType.REGISTER)) {
+            try {
+                userService.create(new User(message.getUsername(), message.getPassword()));
+                success = true;
+            } catch (Exception e) {
             }
-            sendAuthResponseMessage(message.getFrom(), "register", message.getUsername(), success);
-        } else {
-            logger.log(Level.WARNING, "Not supported message type: " + message.getType());
+            sendAuthResponseMessage(message.getFrom(), AuthMessageType.REGISTER, message.getUsername(), success);
         }
     }
 
@@ -113,7 +108,7 @@ public class DbServiceEndpoint implements MessageEndpoint {
         }
     }
 
-    private void sendAuthResponseMessage(Address to, String type, String username, boolean success) {
+    private void sendAuthResponseMessage(Address to, AuthMessageType type, String username, boolean success) {
         AuthResponseMessage responseMessage = new AuthResponseMessage(getAddress(), to);
         responseMessage.setType(type);
         responseMessage.setUsername(username);
@@ -128,7 +123,6 @@ public class DbServiceEndpoint implements MessageEndpoint {
     private <T> T getObjectFromJsonString(String json, Class<T> valueType) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
-        T result = mapper.readValue(json, valueType);
-        return result;
+        return mapper.readValue(json, valueType);
     }
 }
