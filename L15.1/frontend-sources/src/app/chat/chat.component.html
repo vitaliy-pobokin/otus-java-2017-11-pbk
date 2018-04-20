@@ -1,0 +1,77 @@
+<div class="body">
+  <div class="form-wrapper" *ngIf="user === ''">
+    <mat-tab-group class="introduceForm">
+      <mat-tab label="Login">
+        <div>
+          <form class="form">
+            <mat-form-field>
+              <input matInput placeholder="username" #loginUsername>
+            </mat-form-field>
+            <mat-form-field>
+              <input matInput type="password" placeholder="password" #loginPassword>
+            </mat-form-field>
+            <button mat-raised-button (click)="login(loginUsername.value, loginPassword.value)">Login</button>
+          </form>
+        </div>
+      </mat-tab>
+      <mat-tab label="Register">
+        <div>
+          <form class="form">
+            <mat-form-field>
+              <input matInput placeholder="username" #regUsername>
+            </mat-form-field>
+            <mat-form-field>
+              <input matInput type="password" placeholder="password" #regPassword>
+            </mat-form-field>
+            <mat-form-field>
+              <input matInput type="password" placeholder="repeat password" #rRegPassword>
+            </mat-form-field>
+            <button mat-raised-button (click)="register(regUsername.value, regPassword.value, rRegPassword.value)">Register</button>
+          </form>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+  
+  <div class="chat" *ngIf="user !==''">
+    <div class="user-box">
+      <div class="user-box-header">
+        <h4>Connected users:</h4>
+      </div>
+      <div class="users scrollbar">
+        <ul>
+          <li *ngFor="let u of users">
+            <div>{{u}}</div>
+          </li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="chat-box">
+      <div class="chat-box-header">
+        <h4>Chat</h4>
+      </div>
+      <div class="messages scrollbar">
+        <div *ngFor="let message of messages">
+          <div class="chat-message">
+            <mat-card>
+              <mat-card-title *ngIf="message.from">{{message.from}}</mat-card-title>
+              <mat-card-content>
+                <p class="message-text">
+                    {{message.text}}
+                </p>
+                <div class="message-date" *ngIf="message.date">{{message.date | date:'shortTime':'':'ru'}}</div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+      </div>
+      <form class="message-form">
+        <mat-form-field>
+          <textarea matInput placeholder="Type something" #message></textarea>
+        </mat-form-field>
+        <button mat-raised-button (click)="sendChatMessage(message.value); message.value=''">send</button>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,160 @@
+.body {
+    font-family: "Poppins", sans-serif;
+}
+.chat {
+    width: 900px;
+    display:flex;
+    flex-wrap: wrap;
+    margin-top: 20px;
+    margin-left: auto;
+    margin-right: auto;
+
+    border-radius: 4px 4px 4px 4px;
+    background: #fff;
+    padding: 5px;
+    position: relative;
+    box-shadow: 0 3px 1px -2px rgba(0,0,0,.2), 0 2px 2px 0 rgba(0,0,0,.14), 0 1px 5px 0 rgba(0,0,0,.12);
+}
+.user-box {
+    width: 30%;
+    max-width: 30%;
+    height: inherit;
+}
+.user-box-header {
+    margin: 0.5em;
+}
+.users {
+    width: 100%;
+    max-width: 100%;
+}
+.users ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+.users li {
+    position: relative;
+    cursor: pointer;
+    background-color: #EEE;
+    margin: .5em;
+    padding: .3em 0;
+    height: 1.6em;
+    border-radius: 2px;
+}
+.users li:hover {
+    color: #607D8B;
+    background-color: #DDD;
+    left: .1em;
+}
+.users li div {
+    margin: 0.2em 0.8em;
+}
+.chat-box {
+    position: relative;
+    width: 70%;
+    max-width: 70%;;
+}
+.chat-box-header {
+    margin: 0.5em;
+}
+.messages {
+    position: relative;
+    height: 500px;
+    margin: 0.5em;
+    overflow-x: hidden;
+}
+.chat-message {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    width: max-content;
+    max-width: 500px;
+}
+.message-text {
+    max-width: 450px;
+    word-wrap: break-word;
+    margin-bottom: 0.5em;
+}
+.message-date {
+    font-size: 0.7em;
+    color: #999;
+    padding: 0.5em;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+}
+.message-form {
+    position: relative;
+    width: 100%;
+}
+.message-form mat-form-field {
+    width: 80%;
+}
+.message-form button {
+    width: 15%;
+}
+mat-card {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+mat-card-title {
+    font-size: 0.8em;
+    font-weight: bold;
+    color: #607D8B;
+    margin-bottom: 5px;
+}
+.scrollbar {
+    overflow-y: hidden;
+}
+.scrollbar:hover {
+    overflow-y: auto;
+}
+.scrollbar::-webkit-scrollbar-track {
+	background-color: #DDD;
+}
+
+.scrollbar::-webkit-scrollbar {
+    width: 4px;
+	background-color: #DDD;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+    border-radius: 1px;
+	background-color: #607D8B;
+}
+
+.form-wrapper {
+    display: flex;
+    align-items: center;
+    flex-direction: column; 
+    justify-content: center;
+    width: 100%;
+    min-height: 100%;
+    padding: 20px;
+}
+
+.introduceForm {
+    display: flex;
+    flex-direction: column;
+    border-radius: 4px 4px 4px 4px;
+    background: #fff;
+    padding: 30px;
+    width: 90%;
+    max-width: 400px;
+    position: relative;
+    padding: 0px;
+    box-shadow: 0 3px 1px -2px rgba(0,0,0,.2), 0 2px 2px 0 rgba(0,0,0,.14), 0 1px 5px 0 rgba(0,0,0,.12);
+    text-align: center;
+}
+
+.form {
+    margin: 10px;
+}
+
+.form > * {
+    width: 60%;
+}
+
+.form > button {
+    width: 30%;
+    margin: 10px 30px 10px 30px;
+}
