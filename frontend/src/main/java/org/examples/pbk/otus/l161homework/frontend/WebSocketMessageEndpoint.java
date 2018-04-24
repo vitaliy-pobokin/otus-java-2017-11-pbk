@@ -1,5 +1,6 @@
 package org.examples.pbk.otus.l161homework.frontend;
 
+import com.google.inject.Inject;
 import org.examples.pbk.otus.l161homework.AppContext;
 import org.examples.pbk.otus.l161homework.frontend.decoders.WsMessageDecoder;
 import org.examples.pbk.otus.l161homework.frontend.encoders.AuthWsMessageEncoder;
@@ -11,20 +12,24 @@ import org.examples.pbk.otus.l161homework.frontend.wsMessages.LoginWsMessage;
 import org.examples.pbk.otus.l161homework.frontend.wsMessages.RegisterWsMessage;
 import org.examples.pbk.otus.l161homework.frontend.wsMessages.WsMessage;
 
-import javax.ejb.EJB;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.util.logging.Logger;
 
 @ServerEndpoint(value = "/messages",
+        configurator = WebSocketEndpointConfigurator.class,
         encoders = {InfoWsMessageEncoder.class, ChatWsMessageEncoder.class, UsersWsMessageEncoder.class, AuthWsMessageEncoder.class},
         decoders = WsMessageDecoder.class)
 public class WebSocketMessageEndpoint {
 
     private Logger logger = Logger.getLogger("WsMessageEndpoint");
 
-    @EJB
     private AppContext appContext;
+
+    @Inject
+    public WebSocketMessageEndpoint(AppContext appContext) {
+        this.appContext = appContext;
+    }
 
     @OnOpen
     public void open(Session session) {

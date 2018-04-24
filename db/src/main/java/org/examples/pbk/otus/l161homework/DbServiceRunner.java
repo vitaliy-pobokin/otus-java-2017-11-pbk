@@ -7,7 +7,6 @@ import org.examples.pbk.otus.l161homework.messageSystem.MessageSystemContext;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.logging.Level;
 
 public class DbServiceRunner {
     public static void main(String[] args) {

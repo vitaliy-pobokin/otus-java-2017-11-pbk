@@ -10,6 +10,5 @@ public class MessageSystemRunner {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> messageSystem.dispose()));
     }
 }

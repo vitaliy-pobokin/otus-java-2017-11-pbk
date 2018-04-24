@@ -4,27 +4,20 @@ import org.examples.pbk.otus.l161homework.frontend.FrontendServiceEndpoint;
 import org.examples.pbk.otus.l161homework.messageSystem.Address;
 import org.examples.pbk.otus.l161homework.messageSystem.MessageSystemContext;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
-//import javax.enterprise.context.ApplicationScoped;
-//import javax.servlet.ServletContextEvent;
-//import javax.servlet.ServletContextListener;
-//import javax.servlet.annotation.WebListener;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@Singleton
-@Startup
-public class AppContext/* implements ServletContextListener*/ {
+public class AppContext {
 
     private static final Logger logger = Logger.getLogger(AppContext.class.getName());
     private FrontendServiceEndpoint frontendEndpoint;
 
-    @PostConstruct
+    public AppContext() {
+        init();
+    }
+
     public void init() {
         Address msAddress = null;
         Address dbAddress = null;
@@ -45,7 +38,6 @@ public class AppContext/* implements ServletContextListener*/ {
         logger.log(Level.INFO, "Context initialized.");
     }
 
-    @PreDestroy
     public void dispose() {
         frontendEndpoint.dispose();
         logger.log(Level.INFO, "Context destroyed.");
