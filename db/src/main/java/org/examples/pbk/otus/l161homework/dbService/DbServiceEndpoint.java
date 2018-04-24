@@ -11,6 +11,7 @@ import org.examples.pbk.otus.l161homework.dbService.entity.ChatMessage;
 import org.examples.pbk.otus.l161homework.dbService.entity.User;
 
 import java.io.*;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -39,8 +40,11 @@ public class DbServiceEndpoint implements MessageEndpoint {
     }
 
     public void init() {
-        this.socket = createSocketConnection(context.getMessageSystemAddress().getHost(),
-                context.getMessageSystemAddress().getPort());
+        this.socket = createSocketConnection(
+                context.getMessageSystemAddress().getInetAddress(),
+                context.getMessageSystemAddress().getPort(),
+                context.getDbAddress().getInetAddress(),
+                context.getDbAddress().getPort());
         this.messageHandler = new SocketMessageHandler(socket);
         messageHandler.start();
 
@@ -65,10 +69,10 @@ public class DbServiceEndpoint implements MessageEndpoint {
         }
     }
 
-    private Socket createSocketConnection(String host, int port) {
+    private Socket createSocketConnection(InetAddress inetAddress, int port, InetAddress localAddress, int localPort) {
         Socket socket = null;
         try {
-            socket = new Socket(host, port);
+            socket = new Socket(inetAddress, port, localAddress, localPort);
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Error while establishing socket connection: " + e.getMessage());
         }

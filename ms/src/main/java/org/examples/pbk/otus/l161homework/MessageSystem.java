@@ -1,93 +1,100 @@
 package org.examples.pbk.otus.l161homework;
 
 import org.examples.pbk.otus.l161homework.messageSystem.Address;
-import org.examples.pbk.otus.l161homework.messageSystem.MessageEndpoint;
 import org.examples.pbk.otus.l161homework.messageSystem.MsMessage;
 import org.examples.pbk.otus.l161homework.messageSystem.SocketMessageHandler;
 import org.examples.pbk.otus.l161homework.messageSystem.exceptions.MessageSystemException;
 
-import java.net.InetAddress;
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MessageSystem {
     private static final int SERVER_PORT = 5050;
     private static final int CONNECTION_HANDLER_POOL_SIZE = 1;
+    private static final Logger logger = Logger.getLogger(MessageSystem.class.getName());
 
-    private Map<Address, MessageEndpoint> endpoints;
-    private Map<MessageEndpoint, Queue<MsMessage>> messages;
+    private ConcurrentHashMap<Address, SocketMessageHandler> endpoints;
     private final List<Thread> workers;
 
     private ServerSocket serverSocket;
     private final ExecutorService executor;
-    private final List<SocketMessageHandler> handlers = new ArrayList<>();
 
     public MessageSystem() {
         this.endpoints = new ConcurrentHashMap<>();
-        this.messages = new ConcurrentHashMap<>();
         this.workers = new ArrayList<>();
         this.executor = Executors.newFixedThreadPool(CONNECTION_HANDLER_POOL_SIZE);
     }
 
-    public void init() {
+    public void init() throws IOException {
         this.serverSocket = new ServerSocket(SERVER_PORT);
-        executor.execute(() -> {
-            while (!executor.isTerminated()) {
-                Socket socket = serverSocket.accept();
-                SocketMessageHandler socketMessageHandler = new SocketMessageHandler(socket);
-                handlers.add(socketMessageHandler);
-                socketMessageHandler.start();
+        logger.log(Level.INFO, "Server started on port: " + SERVER_PORT);
+        executor.execute(this::handleConnection);
+    }
+
+    private void handleConnection() {
+        while (!executor.isTerminated()) {
+            Socket socket = null;
+            try {
+                socket = serverSocket.accept();
+            } catch (IOException e) {
+                logger.log(Level.WARNING, "Error while handling socket connection: " + e.getMessage());
+                continue;
             }
-        });
-    }
-
-    public void registerEndpoint(MessageEndpoint endpoint) throws MessageSystemException {
-        if (this.endpoints.putIfAbsent(endpoint.getAddress(), endpoint) != null) {
-            throw new MessageSystemException("Endpoint with address: " + endpoint.getAddress() + " already registered.");
+            SocketMessageHandler socketMessageHandler = new SocketMessageHandler(socket);
+            Address endpointAddress = new Address(socket.getLocalAddress(), socket.getPort());
+            registerEndpoint(endpointAddress, socketMessageHandler);
+            socketMessageHandler.start();
+            logger.log(Level.INFO, "Accepted connection from endpoint: " + endpointAddress.toString());
         }
-        Queue<MsMessage> messageQueue = new ConcurrentLinkedQueue<>();
-        messages.put(endpoint, messageQueue);
-        addWorkerThreadForEndpoint(endpoint);
     }
 
-    public void sendMessage(MsMessage message) throws MessageSystemException {
-        MessageEndpoint destination = endpoints.get(message.getTo());
+    private void registerEndpoint(Address address, SocketMessageHandler messageHandler) {
+        /*if (this.endpoints.putIfAbsent(address, messageHandler) != null) {
+            logger.log(Level.WARNING, "Endpoint with address: " + address + " already registered.");
+        }*/
+        this.endpoints.put(address, messageHandler);
+        addWorkerThreadForEndpoint(address, messageHandler);
+    }
+
+    private void sendMessage(MsMessage message) {
+        SocketMessageHandler destination = endpoints.get(message.getTo());
         if (destination != null) {
-            Queue<MsMessage> messageQueue = messages.get(destination);
-            messageQueue.add(message);
+            destination.sendMessage(message);
         } else {
-            throw new MessageSystemException("Endpoint with address: " + destination.getAddress() + " not registered.");
+            logger.log(Level.WARNING, "Endpoint with address: " + message.getTo() + " not registered.");
         }
     }
 
     public void dispose() {
+        executor.shutdown();
         synchronized (workers) {
             workers.forEach(Thread::interrupt);
         }
+        endpoints.values().forEach(SocketMessageHandler::shutdown);
+        logger.log(Level.INFO, "Server stopped on port: " + SERVER_PORT);
     }
 
-    private void addWorkerThreadForEndpoint(MessageEndpoint endpoint) {
-        String threadName = "MessageEndpoint[" + endpoint.getAddress() + "] worker thread";
+    private void addWorkerThreadForEndpoint(Address address, SocketMessageHandler messageHandler) {
+        String threadName = "MessageEndpoint[" + address + "] worker thread";
         Thread thread = new Thread(() -> {
             while (true) {
-                Queue<MsMessage> messageQueue = messages.get(endpoint);
-                while (!messageQueue.isEmpty()) {
-                    endpoint.handle(messageQueue.poll());
-                }
                 try {
-                    Thread.sleep(100);
+                    MsMessage message = messageHandler.getMessage();
+                    sendMessage(message);
                 } catch (InterruptedException e) {
                     return;
                 }
                 if (Thread.currentThread().isInterrupted()) {
+                    logger.log(Level.INFO, "Thread: " + Thread.currentThread().getName() + " was interrupted.");
                     return;
                 }
             }
@@ -97,5 +104,6 @@ public class MessageSystem {
             workers.add(thread);
         }
         thread.start();
+        logger.log(Level.INFO, "Thread: " + thread.getName() + " started.");
     }
 }

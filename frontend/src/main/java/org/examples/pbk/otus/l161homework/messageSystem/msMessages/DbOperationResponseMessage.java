@@ -3,8 +3,11 @@ package org.examples.pbk.otus.l161homework.messageSystem.msMessages;
 import org.examples.pbk.otus.l161homework.messageSystem.Address;
 import org.examples.pbk.otus.l161homework.messageSystem.MsMessage;
 
-public class DbOperationResponseMessage extends MsMessage {
+import java.io.Serializable;
 
+public class DbOperationResponseMessage extends MsMessage implements Serializable {
+
+    private static final long serialVersionUID = 2023896651938045094L;
     private String entityName;
     private String methodName;
     private String result;

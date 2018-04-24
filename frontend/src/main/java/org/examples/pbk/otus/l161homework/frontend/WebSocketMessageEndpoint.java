@@ -11,13 +11,11 @@ import org.examples.pbk.otus.l161homework.frontend.wsMessages.LoginWsMessage;
 import org.examples.pbk.otus.l161homework.frontend.wsMessages.RegisterWsMessage;
 import org.examples.pbk.otus.l161homework.frontend.wsMessages.WsMessage;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import javax.ejb.EJB;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.util.logging.Logger;
 
-@ApplicationScoped
 @ServerEndpoint(value = "/messages",
         encoders = {InfoWsMessageEncoder.class, ChatWsMessageEncoder.class, UsersWsMessageEncoder.class, AuthWsMessageEncoder.class},
         decoders = WsMessageDecoder.class)
@@ -25,7 +23,7 @@ public class WebSocketMessageEndpoint {
 
     private Logger logger = Logger.getLogger("WsMessageEndpoint");
 
-    @Inject
+    @EJB
     private AppContext appContext;
 
     @OnOpen

@@ -9,6 +9,7 @@ import org.examples.pbk.otus.l161homework.messageSystem.msMessages.*;
 
 import javax.websocket.Session;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -41,8 +42,11 @@ public class FrontendServiceEndpoint implements MessageEndpoint {
     }
 
     public void init() {
-        this.socket = createSocketConnection(context.getMessageSystemAddress().getHost(),
-                context.getMessageSystemAddress().getPort());
+        this.socket = createSocketConnection(
+                context.getMessageSystemAddress().getInetAddress(),
+                context.getMessageSystemAddress().getPort(),
+                context.getFrontendAddress().getInetAddress(),
+                context.getFrontendAddress().getPort());
         this.messageHandler = new SocketMessageHandler(socket);
         messageHandler.start();
 
@@ -67,10 +71,10 @@ public class FrontendServiceEndpoint implements MessageEndpoint {
         }
     }
 
-    private Socket createSocketConnection(String host, int port) {
+    private Socket createSocketConnection(InetAddress inetAddress, int port, InetAddress localAddress, int localPort) {
         Socket socket = null;
         try {
-            socket = new Socket(host, port);
+            socket = new Socket(inetAddress, port, localAddress, localPort);
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Error while establishing socket connection: " + e.getMessage());
         }

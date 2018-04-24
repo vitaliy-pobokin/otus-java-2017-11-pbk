@@ -44,7 +44,10 @@ public class SocketMessageHandler {
     private void sendToSocket() {
         try (ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(socket.getOutputStream()))) {
             while (socket.isConnected()) {
-                out.writeObject(outMsgQueue.take());
+                MsMessage message = outMsgQueue.take();
+                out.writeObject(message);
+                out.flush();
+                logger.log(Level.INFO, "Message: " + message + " was sent.");
             }
         } catch (IOException | InterruptedException e) {
             logger.log(Level.SEVERE, e.getMessage());
@@ -53,7 +56,11 @@ public class SocketMessageHandler {
 
     private void getFromSocket() {
         try (ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()))) {
-            inMsgQueue.put((MsMessage) in.readObject());
+            while (socket.isConnected()) {
+                MsMessage message = (MsMessage) in.readObject();
+                inMsgQueue.put(message);
+                logger.log(Level.INFO, "Message: " + message + " was received.");
+            }
         } catch (IOException | InterruptedException | ClassNotFoundException e) {
             logger.log(Level.SEVERE, e.getMessage());
         }

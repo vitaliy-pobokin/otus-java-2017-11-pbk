@@ -4,25 +4,39 @@ import org.examples.pbk.otus.l161homework.frontend.FrontendServiceEndpoint;
 import org.examples.pbk.otus.l161homework.messageSystem.Address;
 import org.examples.pbk.otus.l161homework.messageSystem.MessageSystemContext;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.servlet.annotation.WebListener;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.ejb.Singleton;
+import javax.ejb.Startup;
+//import javax.enterprise.context.ApplicationScoped;
+//import javax.servlet.ServletContextEvent;
+//import javax.servlet.ServletContextListener;
+//import javax.servlet.annotation.WebListener;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@WebListener
-@ApplicationScoped
-public class AppContext implements ServletContextListener {
+@Singleton
+@Startup
+public class AppContext/* implements ServletContextListener*/ {
 
     private static final Logger logger = Logger.getLogger(AppContext.class.getName());
     private FrontendServiceEndpoint frontendEndpoint;
 
-    @Override
-    public void contextInitialized(ServletContextEvent sce) {
-        Address msAddress = new Address("127.0.0.1", 5050);
-        Address dbAddress = new Address("127.0.0.1", 5051);
-        Address frontAddress = new Address("127.0.0.1", 5052);
+    @PostConstruct
+    public void init() {
+        Address msAddress = null;
+        Address dbAddress = null;
+        Address frontAddress = null;
+        try {
+            msAddress = new Address(InetAddress.getByName("127.0.0.1"), 5050);
+            dbAddress = new Address(InetAddress.getByName("127.0.0.1"), 5051);
+            frontAddress = new Address(InetAddress.getByName("127.0.0.1"), 5052);
+        } catch (UnknownHostException e) {
+            logger.log(Level.SEVERE, "Error while initializing context: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
         MessageSystemContext context = new MessageSystemContext(msAddress);
         context.setDbAddress(dbAddress);
         context.setFrontendAddress(frontAddress);
@@ -31,8 +45,8 @@ public class AppContext implements ServletContextListener {
         logger.log(Level.INFO, "Context initialized.");
     }
 
-    @Override
-    public void contextDestroyed(ServletContextEvent sce) {
+    @PreDestroy
+    public void dispose() {
         frontendEndpoint.dispose();
         logger.log(Level.INFO, "Context destroyed.");
     }

@@ -3,8 +3,11 @@ package org.examples.pbk.otus.l161homework.messageSystem.msMessages;
 import org.examples.pbk.otus.l161homework.messageSystem.Address;
 import org.examples.pbk.otus.l161homework.messageSystem.MsMessage;
 
-public class AuthResponseMessage extends MsMessage {
+import java.io.Serializable;
 
+public class AuthResponseMessage extends MsMessage implements Serializable {
+
+    private static final long serialVersionUID = 6023147325295710836L;
     private AuthMessageType type;
     private String username;
     private boolean success;

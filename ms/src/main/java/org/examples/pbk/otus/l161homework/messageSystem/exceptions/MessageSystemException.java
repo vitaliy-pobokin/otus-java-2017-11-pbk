@@ -1,6 +1,6 @@
 package org.examples.pbk.otus.l161homework.messageSystem.exceptions;
 
-public class MessageSystemException extends Exception {
+public class MessageSystemException extends RuntimeException {
     public MessageSystemException() {
     }
 

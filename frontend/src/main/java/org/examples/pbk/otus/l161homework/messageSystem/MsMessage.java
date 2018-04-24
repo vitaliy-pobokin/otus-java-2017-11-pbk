@@ -1,6 +1,9 @@
 package org.examples.pbk.otus.l161homework.messageSystem;
 
-public abstract class MsMessage {
+import java.io.Serializable;
+
+public abstract class MsMessage implements Serializable {
+    private static final long serialVersionUID = -5845845079433720259L;
     private Address from;
     private Address to;
 
