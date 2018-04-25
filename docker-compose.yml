@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  message-service:
+    build: ./ms
+    volumes:
+      - ./ms:/usr/src/app
+      - ~/.m2:/root/.m2
+    ports:
+      - 5050:5050
+  db:
+    image: sath89/oracle-xe-11g
+    ports:
+      - 1521:1521
+  db-service:
+    build: ./db
+    volumes:
+      - ./ms:/usr/src/app
+      - ~/.m2:/root/.m2
+    ports:
+      - 1521:1521
+      - 5051:5051
+    depends_on:
+      - db
+      - message-service
+  frontend-service:
+    build: ./frontend
+    volumes:
+      - ./frontend:/usr/src/app
+      - ~/.m2:/root/.m2
+    ports:
+      - 3000:3000
+      - 5052:5052
+    depends_on:
+      - message-service
+      - db-service
