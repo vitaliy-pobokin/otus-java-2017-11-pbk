@@ -2,35 +2,49 @@ version: '3'
 
 services:
   message-service:
-    build: ./ms
+    build: ./message-service
     volumes:
-      - ./ms:/usr/src/app
+      - ./message-service:/usr/src/app
       - ~/.m2:/root/.m2
     ports:
       - 5050:5050
+
   db:
-    image: sath89/oracle-xe-11g
-    ports:
-      - 1521:1521
-  db-service:
-    build: ./db
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: root
+
+  user-service:
+    build: ./user-service
     volumes:
-      - ./ms:/usr/src/app
+      - ./user-service:/usr/src/app
       - ~/.m2:/root/.m2
     ports:
-      - 1521:1521
       - 5051:5051
     depends_on:
       - db
       - message-service
-  frontend-service:
-    build: ./frontend
+
+  chat-message-service:
+    build: ./chat-message-service
     volumes:
-      - ./frontend:/usr/src/app
+      - ./chat-message-service:/usr/src/app
+      - ~/.m2:/root/.m2
+    ports:
+      - 5052:5052
+    depends_on:
+      - db
+      - message-service
+
+  frontend-service:
+    build: ./frontend-service
+    volumes:
+      - ./frontend-service:/usr/src/app
       - ~/.m2:/root/.m2
     ports:
       - 3000:3000
-      - 5052:5052
+      - 5053:5053
     depends_on:
       - message-service
-      - db-service
+      - user-service
+      - chat-message-service
