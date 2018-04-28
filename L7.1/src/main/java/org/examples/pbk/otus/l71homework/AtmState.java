@@ -13,7 +13,7 @@ public class AtmState {
     }
 
     public List<BanknoteCellState> getState() {
-        return banknoteCellStates;
+        return new ArrayList<>(banknoteCellStates);
     }
 
     class BanknoteCellState {
