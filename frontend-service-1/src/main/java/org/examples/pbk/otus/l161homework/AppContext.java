@@ -1,11 +1,8 @@
 package org.examples.pbk.otus.l161homework;
 
-import com.google.inject.Provides;
 import com.google.inject.Singleton;
-import org.examples.pbk.otus.l161homework.app.FrontendService;
 import org.examples.pbk.otus.l161homework.app.MessageSystemContext;
 import org.examples.pbk.otus.l161homework.frontend.FrontendServiceImpl;
-import org.examples.pbk.otus.l161homework.frontend.WsService;
 import org.examples.pbk.otus.l161homework.messageSystem.Address;
 
 import java.net.InetAddress;
@@ -40,7 +37,7 @@ public class AppContext {
         MessageSystemContext context = new MessageSystemContext(msAddress);
         context.registerService("user-service", userServiceAddress);
         context.registerService("chat-message-service", chatMessageServiceAddress);
-        context.registerService("frontend-service", frontendServiceAddress);
+        context.registerService("frontend-service-1", frontendServiceAddress);
         frontendService = new FrontendServiceImpl(frontendServiceAddress, context);
         frontendService.init();
         logger.log(Level.INFO, "Context initialized.");
@@ -51,7 +48,6 @@ public class AppContext {
         logger.log(Level.INFO, "Context destroyed.");
     }
 
-//    @Provides
     public FrontendServiceImpl getFrontendService() {
         return frontendService;
     }
